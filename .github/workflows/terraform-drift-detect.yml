@@ -1,0 +1,25 @@
+name: Terraform Drift Detection
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # Weekly, Monday 03:00 UTC
+
+jobs:
+  drift-detection:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan (Detect Drift)
+        run: terraform plan
+
