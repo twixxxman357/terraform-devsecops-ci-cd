@@ -27,11 +27,19 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-name: Policy Check (OPA / Conftest)
+      - name: Policy Check (OPA / Conftest)
         uses: instrumenta/conftest-action@v0.4.0
         with:
           files: terraform/
           policy: policies/
 
+      - name: Snyk IaC Security Scan
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
       - name: Terraform Plan
         run: terraform plan
+
