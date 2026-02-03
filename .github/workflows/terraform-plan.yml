@@ -27,6 +27,11 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+name: Policy Check (OPA / Conftest)
+        uses: instrumenta/conftest-action@v0.4.0
+        with:
+          files: terraform/
+          policy: policies/
+
       - name: Terraform Plan
         run: terraform plan
-
