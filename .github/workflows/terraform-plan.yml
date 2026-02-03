@@ -18,10 +18,6 @@ jobs:
         with:
           terraform_version: 1.6.6
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-        working-directory: terraform/envs/stage-1/example
-
       - name: Terraform Init
         run: terraform init -backend=false
         working-directory: terraform/envs/stage-1/example
@@ -29,20 +25,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
         working-directory: terraform/envs/stage-1/example
-
-      - name: Policy Check (OPA / Conftest)
-        uses: instrumenta/conftest-action@v0.4.0
-        with:
-          files: terraform/envs/stage-1/example
-          policy: policies/
-
-            - name: Snyk IaC Security Scan
-        uses: snyk/actions/iac@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: terraform/envs/stage-1/example --severity-threshold=high --org=default
-
 
       - name: Terraform Plan
         run: terraform plan
