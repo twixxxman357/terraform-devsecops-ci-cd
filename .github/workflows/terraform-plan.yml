@@ -32,6 +32,13 @@ jobs:
           files: terraform/envs/stage-1/example
           policy: policies/
 
+      - name: Snyk IaC Security Scan
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: terraform/envs/stage-1/example --severity-threshold=high --org=default
+
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform/envs/stage-1/example
