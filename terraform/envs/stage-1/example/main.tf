@@ -1,3 +1,5 @@
+# Test CI pipeline execution
+
 terraform {
   required_version = ">= 1.6.0"
 }
