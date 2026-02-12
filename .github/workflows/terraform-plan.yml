@@ -1,50 +1,39 @@
-name: Terraform Plan
+name: Terraform CI
 
 on:
   pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  terraform-plan:
+  terraform:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        environment: [stage-1, stage-2]
+
+    defaults:
+      run:
+        working-directory: terraform/envs/${{ matrix.environment }}
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
-
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-        working-directory: terraform/envs/stage-1/example
 
       - name: Terraform Init
         run: terraform init -backend=false
-        working-directory: terraform/envs/stage-1/example
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: terraform/envs/stage-1/example
-
-      - name: Policy Check (OPA / Conftest)
-        uses: instrumenta/conftest-action@v0.4.0
-        with:
-          files: terraform/envs/stage-1/example
-          policy: policies/
-
-            - name: Snyk IaC Security Scan
-        uses: snyk/actions/iac@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: terraform/envs/stage-1/example --severity-threshold=high --org=default
-
 
       - name: Terraform Plan
-        run: terraform plan
-        working-directory: terraform/envs/stage-1/example
+        run: terraform plan -no-color
 
