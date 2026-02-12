@@ -12,11 +12,9 @@ jobs:
 
     strategy:
       matrix:
-        environment: [stage-1, stage-2]
-
-    defaults:
-      run:
-        working-directory: terraform/envs/${{ matrix.environment }}
+        environment:
+          - stage-1/example
+          - stage-2
 
     steps:
       - name: Checkout
@@ -26,14 +24,22 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: |
+          cd terraform/envs/${{ matrix.environment }}
+          terraform init -backend=false
 
       - name: Terraform Format Check
-        run: terraform fmt -check
+        run: |
+          cd terraform/envs/${{ matrix.environment }}
+          terraform fmt -check
 
       - name: Terraform Validate
-        run: terraform validate
+        run: |
+          cd terraform/envs/${{ matrix.environment }}
+          terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: |
+          cd terraform/envs/${{ matrix.environment }}
+          terraform plan -no-color
 
